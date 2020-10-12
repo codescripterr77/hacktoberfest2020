@@ -1,24 +1,15 @@
 #!/bin/bash
+FILE="./data.vcf"
 
-read -p "Enter the source path: "  spath
-read -p "Enter the target path: "  tpath
+while IFS=, read -r FName LName DOB Tel
+do
+    echo "BEGIN:VCARD"  >> $FILE
+    echo "VERSION:3.0" >> $FILE
+    echo "N:$LName;$FName;;;" >> $FILE
+    echo "FN:$FName $LName" >> $FILE
+    echo "TEL;TYPE=HOME:$Tel" >> $FILE
+    echo "BDAY:$DOB" >> $FILE
+    echo "END:VCARD" >> $FILE
+done < data.csv
 
-# Using ls -p tells ls to append a slash to entries which are a directory, 
-# and using grep -v / tells grep to return only lines not containing a slash.
-files=$(ls -p $spath | grep -v /)
 
-#splits into separate variables separated by newline
-readarray -t y <<<"$files"
-
-for i in "${y[@]}"; do
-    for j in "${y[@]}"; do
-            if [ $i != $j ]; then
-                #duplicate file found
-                if cmp --silent $i $j;then
-                    #move one of the files to destination
-                    mv $j $tpath
-                    echo "$i --- $j yes"
-                fi
-            fi
-    done
-done
